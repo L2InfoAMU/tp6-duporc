@@ -119,7 +119,16 @@ public class Grid implements Iterable<Cell> {
 
     // TODO: Écrire une version correcte de cette méthode.
     private CellState calculateNextState(int rowIndex, int columnIndex) {
-        return null;
+        if (getCell(rowIndex,columnIndex).isAlive()
+                && (countAliveNeighbours(rowIndex,columnIndex) == 2
+                || countAliveNeighbours(rowIndex,columnIndex) == 3))
+            return CellState.ALIVE;
+
+        else if (!getCell(rowIndex,columnIndex).isAlive()
+                && countAliveNeighbours(rowIndex,columnIndex) == 3)
+            return CellState.ALIVE;
+        else
+            return CellState.DEAD;
     }
 
 
@@ -127,12 +136,25 @@ public class Grid implements Iterable<Cell> {
     // TODO: Écrire une version correcte de cette méthode.
     private CellState[][] calculateNextStates() {
         CellState[][] nextCellState = new CellState[getNumberOfRows()][getNumberOfColumns()];
+
+        for (int rowIndex = 0; rowIndex < getNumberOfRows(); rowIndex++)
+            for (int columIndex = 0; columIndex < getNumberOfColumns(); columIndex++)
+                nextCellState[rowIndex][columIndex] = calculateNextState(rowIndex,columIndex);
+
         return nextCellState;
     }
 
     // TODO: Écrire une version correcte de cette méthode.
     private void updateStates(CellState[][] nextState) {
+        for (int rowIndex = 0; rowIndex < getNumberOfRows(); rowIndex++)
+            for (int columnIndex = 0; columnIndex < getNumberOfColumns(); columnIndex++)
+                cells[rowIndex][columnIndex].setState(nextState[rowIndex][columnIndex]);
+    }
 
+    private void updateStates(CellState nextState) {
+        for (int rowIndex = 0; rowIndex < getNumberOfRows(); rowIndex++)
+            for (int columnIndex = 0; columnIndex < getNumberOfColumns(); columnIndex++)
+                cells[rowIndex][columnIndex].setState(nextState);
     }
 
     /**
@@ -150,7 +172,7 @@ public class Grid implements Iterable<Cell> {
      */
     // TODO: Écrire une version correcte de cette méthode.
     void updateToNextGeneration() {
-
+        updateStates(calculateNextStates());
     }
 
     /**
@@ -158,7 +180,7 @@ public class Grid implements Iterable<Cell> {
      */
     // TODO: Écrire une version correcte de cette méthode.
     void clear() {
-
+        updateStates(CellState.DEAD);
     }
 
     /**
@@ -169,6 +191,6 @@ public class Grid implements Iterable<Cell> {
      */
     // TODO: Écrire une version correcte de cette méthode.
     void randomGeneration(Random random) {
-
+        updateStates();
     }
 }
